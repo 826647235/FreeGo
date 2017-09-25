@@ -1,6 +1,8 @@
 package com.example.smallning.freego;
 
 
+import android.content.Intent;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -9,10 +11,13 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
+import android.widget.HeaderViewListAdapter;
+import android.widget.Toast;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
-    //我改了些东西
 
     private Button mainButton;
     private Button mapButton;
@@ -20,11 +25,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button optionButton;
 
     private Toolbar toolbar;
+    private NavigationView navigationView;
 
     private MainFragment mainFragment;
     private MapFragment mapFragment;
     private SocietyFragment societyFragment;
     private OptionFragment optionFragment;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         toolbar=(Toolbar)findViewById(R.id.toolbar);
+        navigationView=(NavigationView)findViewById(R.id.nav);
         setSupportActionBar(toolbar);
 
         mainButton=(Button)findViewById(R.id.mainButton);
@@ -47,6 +55,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mapFragment=new MapFragment();
         societyFragment=new SocietyFragment();
         optionFragment=new OptionFragment();
+
+        View headerView =navigationView.getHeaderView(0);
+        CircleImageView circleImageView=headerView.findViewById(R.id.portrait);
+        circleImageView.setOnClickListener(this);
+        headerView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(MainActivity.this,"hhh",Toast.LENGTH_SHORT).show();
+            }
+        });
+
 
 
     }
@@ -67,6 +86,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.optionButton:
                 showFragment(optionFragment);
                 break;
+            case R.id.portrait:
+                Intent intent =new Intent(MainActivity.this,LoginActivity1.class);
+                startActivity(intent);
             default:
                 break;
         }
