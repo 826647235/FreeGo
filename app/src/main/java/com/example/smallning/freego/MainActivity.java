@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
-import android.widget.HeaderViewListAdapter;
 import android.widget.Toast;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -87,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 showFragment(optionFragment);
                 break;
             case R.id.portrait:
-                Intent intent =new Intent(MainActivity.this,LoginActivity1.class);
+                Intent intent =new Intent(MainActivity.this,LoginActivity.class);
                 startActivity(intent);
             default:
                 break;
