@@ -41,7 +41,8 @@
         <activity android:name=".function3" />
         <activity android:name=".function4" />
         <activity android:name=".LoginActivity" />
-        <activity android:name=".RegisterActivity"></activity>
+        <activity android:name=".RegisterActivity" />
+        <activity android:name=".RegisterSuccss"></activity>
     </application>
 
 </manifest>

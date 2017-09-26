@@ -1,5 +1,6 @@
 package com.example.smallning.freego;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -31,7 +32,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         password=(EditText)findViewById(R.id.password);
         password2=(EditText)findViewById(R.id.password2);
         register=(Button)findViewById(R.id.register);
-
         register.setOnClickListener(this);
 
 
@@ -43,12 +43,11 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             case R.id.register:
                 if(TextUtils.isEmpty(account.getText())||TextUtils.isEmpty(password.getText())||TextUtils.isEmpty(password2.getText())) {
                     Toast.makeText(RegisterActivity.this,"请输入正确的用户名或密码",Toast.LENGTH_SHORT).show();
-                } else if(password.getText().toString()!=password2.getText().toString()) {
-                    Toast.makeText(RegisterActivity.this,"两次密码不匹配",Toast.LENGTH_SHORT).show();
+                } else if(!password.getText().toString().equals(password2.getText().toString())) {
+                    Toast.makeText(RegisterActivity.this,password.getText().toString()+"两次密码不匹配"+password2.getText().toString(),Toast.LENGTH_SHORT).show();
                 } else {
                     Register();
                 }
-
                 break;
         }
     }
@@ -65,7 +64,12 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                             .build();
                     Request request=new Request.Builder().url("http://10.0.2.2:8080/hhh").post(requestBody).build();
                     Response response=client.newCall(request).execute();
-                    if(response.body().string()=="")
+                    if(response.body().string()=="success")
+                    {
+                        Intent intent=new Intent(RegisterActivity.this,RegisterSuccss.class);
+                    } else {
+                        Toast.makeText(RegisterActivity.this,"该用户名已被使用",Toast.LENGTH_SHORT).show();
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
