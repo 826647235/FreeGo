@@ -6,11 +6,13 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -37,26 +39,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        toolbar=(Toolbar)findViewById(R.id.toolbar);
-        navigationView=(NavigationView)findViewById(R.id.nav);
-        setSupportActionBar(toolbar);
-
-        mainButton=(Button)findViewById(R.id.mainButton);
-        mapButton=(Button)findViewById(R.id.mapButton);
-        societyButton=(Button)findViewById(R.id.societyButton);
-        optionButton=(Button)findViewById(R.id.optionButton);
+        navigationView = (NavigationView)findViewById(R.id.nav);
+        mainButton = (Button)findViewById(R.id.mainButton);
+        mapButton = (Button)findViewById(R.id.mapButton);
+        societyButton = (Button)findViewById(R.id.societyButton);
+        optionButton = (Button)findViewById(R.id.optionButton);
         mainButton.setOnClickListener(this);
         mapButton.setOnClickListener(this);
         societyButton.setOnClickListener(this);
         optionButton.setOnClickListener(this);
+        mainFragment = new MainFragment();
+        mapFragment = new MapFragment();
+        societyFragment = new SocietyFragment();
+        optionFragment = new OptionFragment();
 
-        mainFragment=new MainFragment();
-        mapFragment=new MapFragment();
-        societyFragment=new SocietyFragment();
-        optionFragment=new OptionFragment();
-
-        View headerView =navigationView.getHeaderView(0);
-        CircleImageView circleImageView=headerView.findViewById(R.id.portrait);
+        View headerView = navigationView.getHeaderView(0);
+        CircleImageView circleImageView = headerView.findViewById(R.id.portrait);
         circleImageView.setOnClickListener(this);
         headerView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,8 +62,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(MainActivity.this,"hhh",Toast.LENGTH_SHORT).show();
             }
         });
-
-
 
     }
 
@@ -86,14 +82,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 showFragment(optionFragment);
                 break;
             case R.id.portrait:
-                Intent intent =new Intent(MainActivity.this,LoginActivity.class);
+                Intent intent = new Intent(MainActivity.this,LoginActivity.class);
                 startActivity(intent);
             default:
                 break;
         }
     }
     private void showFragment(Fragment fragment) {
-        FragmentManager manager=getSupportFragmentManager();
+        FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction=manager.beginTransaction();
         if(!fragment.isAdded())  {
             transaction.add(R.id.fragmentPosition,fragment);

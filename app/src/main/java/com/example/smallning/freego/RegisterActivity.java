@@ -44,7 +44,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 if(TextUtils.isEmpty(account.getText())||TextUtils.isEmpty(password.getText())||TextUtils.isEmpty(password2.getText())) {
                     Toast.makeText(RegisterActivity.this,"请输入正确的用户名或密码",Toast.LENGTH_SHORT).show();
                 } else if(!password.getText().toString().equals(password2.getText().toString())) {
-                    Toast.makeText(RegisterActivity.this,password.getText().toString()+"两次密码不匹配"+password2.getText().toString(),Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RegisterActivity.this,"两次密码不匹配",Toast.LENGTH_SHORT).show();
                 } else {
                     Register();
                 }
@@ -62,13 +62,19 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                             .add("Account",account.getText().toString())
                             .add("Password",password.getText().toString())
                             .build();
-                    Request request=new Request.Builder().url("http://10.0.2.2:8080/hhh").post(requestBody).build();
+                    Request request=new Request.Builder().url("http://10.0.2.2:8080/FreeGo/register").post(requestBody).build();
                     Response response=client.newCall(request).execute();
-                    if(response.body().string()=="success")
+                    if(response.body().string().toString().equals("true"))
                     {
                         Intent intent=new Intent(RegisterActivity.this,RegisterSuccss.class);
+                        startActivity(intent);
                     } else {
-                        Toast.makeText(RegisterActivity.this,"该用户名已被使用",Toast.LENGTH_SHORT).show();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(RegisterActivity.this,"该用户名已被使用",Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
