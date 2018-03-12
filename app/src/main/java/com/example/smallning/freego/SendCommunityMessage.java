@@ -171,39 +171,39 @@ public class SendCommunityMessage extends AppCompatActivity {
     }
 
 
-    public class PictureAdapter extends RecyclerView.Adapter<PictureAdapter.ViewHolder> {
-
-        private List<Bitmap> pictureList;
-
-        class ViewHolder extends RecyclerView.ViewHolder {
-            ImageView picture;
-
-            public ViewHolder(View view) {
-                super(view);
-                picture = view.findViewById(R.id.picture);
-            }
-        }
-
-        public PictureAdapter(List<Bitmap> list) {
-            pictureList = list;
-        }
-
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view= LayoutInflater.from(parent.getContext()).inflate(R.layout.picture_list,parent,false);
-            ViewHolder viewHolder = new ViewHolder(view);
-            return viewHolder;
-        }
-
-        @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
-            Bitmap singlePicture = pictureList.get(position);
-            holder.picture.setImageBitmap(singlePicture);
-        }
-
-        @Override
-        public int getItemCount() {
-            return pictureList.size();
-        }
-    }
+//    public class PictureAdapter extends RecyclerView.Adapter<PictureAdapter.ViewHolder> {
+//
+//        private List<Bitmap> pictureList;
+//
+//        class ViewHolder extends RecyclerView.ViewHolder {
+//            ImageView picture;
+//
+//            public ViewHolder(View view) {
+//                super(view);
+//                picture = view.findViewById(R.id.picture);
+//            }
+//        }
+//
+//        public PictureAdapter(List<Bitmap> list) {
+//            pictureList = list;
+//        }
+//
+//        @Override
+//        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+//            View view= LayoutInflater.from(parent.getContext()).inflate(R.layout.picture_list,parent,false);
+//            ViewHolder viewHolder = new ViewHolder(view);
+//            return viewHolder;
+//        }
+//
+//        @Override
+//        public void onBindViewHolder(ViewHolder holder, int position) {
+//            Bitmap singlePicture = pictureList.get(position);
+//            holder.picture.setImageBitmap(singlePicture);
+//        }
+//
+//        @Override
+//        public int getItemCount() {
+//            return pictureList.size();
+//        }
+//    }
 }

@@ -2,6 +2,7 @@ package com.example.smallning.freego;
 
 import android.graphics.Bitmap;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
  * Created by Smallning on 2018/3/6.
  */
 
-public class CommunityShow {
+public class CommunityShow implements Serializable{
     private int id;
     private Bitmap portrait = null;
     private String name;
