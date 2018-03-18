@@ -7,11 +7,14 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +46,9 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.View
         LinearLayout collection;
         LinearLayout comment;
         LinearLayout like;
+        ImageView collectionIcon;
+        ImageView likeIcon;
+        TextView collectionState;
 
         public ViewHolder(View view) {
             super(view);
@@ -56,6 +62,9 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.View
             collection = view.findViewById(R.id.collection);
             comment = view.findViewById(R.id.comment);
             like = view.findViewById(R.id.like);
+            collectionIcon = view.findViewById(R.id.collectionIcon);
+            likeIcon = view.findViewById(R.id.likeIcon);
+            collectionState = view.findViewById(R.id.collectionState);
         }
     }
 
@@ -67,38 +76,119 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.View
     }
 
     @Override
-    public CommunityAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view= LayoutInflater.from(parent.getContext()).inflate(R.layout.community_list,parent,false);
-        final CommunityAdapter.ViewHolder viewHolder = new CommunityAdapter.ViewHolder(view);
-        int position = viewHolder.getAdapterPosition();
-        final CommunityShow communityShow = communityList.get(position);
+        final ViewHolder viewHolder = new ViewHolder(view);
 
         viewHolder.communityView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(activity,Writing.class);
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("CommunityShow",communityShow);
-                intent.putExtras(bundle);
-                activity.startActivity(intent);
+                int position = viewHolder.getAdapterPosition();
+                CommunityShow communityShow = communityList.get(position);
+                startNew("Message",communityShow);
             }
         });
+        viewHolder.portrait.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int position = viewHolder.getAdapterPosition();
+                CommunityShow communityShow = communityList.get(position);
+                startInformation(communityShow.getName());
+            }
+        });
+        viewHolder.name.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int position = viewHolder.getAdapterPosition();
+                CommunityShow communityShow = communityList.get(position);
+                startInformation(communityShow.getName());
+            }
+        });
+
         viewHolder.collection.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ClickMethod.collection(((GlobalVariable)activity.getApplication()).getName(),communityShow.getId());
+                int position = viewHolder.getAdapterPosition();
+                final CommunityShow communityShow = communityList.get(position);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            OkHttpClient okHttpClient = new OkHttpClient();
+                            RequestBody requestBody = new FormBody.Builder()
+                                    .add("Name", ((GlobalVariable) activity.getApplication()).getName())
+                                    .add("Id", String.valueOf(communityShow.getId()))
+                                    .build();
+                            Request request = new Request.Builder().post(requestBody).url("http://106.15.201.54:8080/Freego/collection").build();
+                            Response response = okHttpClient.newCall(request).execute();
+                            final String resBody = response.body().string().toString();
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (resBody.equals("true")) {
+                                        Toast.makeText(activity, "收藏成功", Toast.LENGTH_SHORT).show();
+                                        viewHolder.collectionIcon.setImageResource(R.mipmap.collect_click);
+                                        viewHolder.collectionState.setText("已收藏");
+                                        viewHolder.collection.setClickable(false);
+                                        communityShow.setIsCollect(true);
+                                    } else {
+                                        Toast.makeText(activity, "网络故障", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+                        } catch (Exception e) {
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(activity, "网络故障", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
             }
         });
         viewHolder.comment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                int position = viewHolder.getAdapterPosition();
+                CommunityShow communityShow = communityList.get(position);
+                startNew("Comment",communityShow);
             }
         });
         viewHolder.like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ClickMethod.like(communityShow.getId());
+                int position = viewHolder.getAdapterPosition();
+                final CommunityShow communityShow = communityList.get(position);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            OkHttpClient okHttpClient = new OkHttpClient();
+                            RequestBody requestBody = new FormBody.Builder()
+                                    .add("Id",String.valueOf(communityShow.getId()))
+                                    .build();
+                            Request request = new Request.Builder().post(requestBody).url("http://106.15.201.54:8080/Freego/like").build();
+                            Response response = okHttpClient.newCall(request).execute();
+                            if(response.body().string().toString().equals("true")) {
+                                viewHolder.likeIcon.setImageResource(R.mipmap.like_click);
+                                viewHolder.likeNum.setText(Integer.valueOf(communityShow.getLikeNum()+1));
+                                viewHolder.like.setClickable(false);
+                                communityShow.setIsLike(true);
+                            }
+                        } catch (Exception e) {
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(activity, "网络故障", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
             }
         });
         return viewHolder;
@@ -141,6 +231,22 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.View
         holder.date.setText(communityMessage.getDate());
         holder.content.setText(communityMessage.getContent());
         holder.likeNum.setText(String.valueOf(communityMessage.getLikeNum()));
+        if(communityMessage.getIsLike()) {
+            holder.likeIcon.setImageResource(R.mipmap.like);
+            holder.like.setClickable(true);
+        } else {
+            holder.likeIcon.setImageResource(R.mipmap.like_click);
+            holder.like.setClickable(false);
+        }
+
+        if(communityMessage.getIsLike()) {
+            holder.collectionIcon.setImageResource(R.mipmap.collect);
+            holder.collection.setClickable(true);
+        } else {
+            holder.collectionIcon.setImageResource(R.mipmap.collect_click);
+            holder.collection.setClickable(false);
+        }
+
         if (communityMessage.getPictureNum() != 0) {
             if (communityMessage.getPictureList() == null) {
                 communityMessage.setPictureList(new ArrayList<Bitmap>());
@@ -185,5 +291,25 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.View
     @Override
     public int getItemCount() {
         return communityList.size();
+    }
+
+    private void startNew(String state,CommunityShow communityShow) {
+        Intent intent = new Intent(activity,Writing.class);
+        intent.putExtra("Id",communityShow.getId());
+        intent.putExtra("Name",communityShow.getName());
+        intent.putExtra("Date",communityShow.getDate());
+        intent.putExtra("Content",communityShow.getContent());
+        intent.putExtra("LikeNum",communityShow.getLikeNum());
+        intent.putExtra("PictureNum",communityShow.getPictureNum());
+        intent.putExtra("IsLike",communityShow.getIsLike());
+        intent.putExtra("IsCollect",communityShow.getIsCollect());
+        intent.putExtra("State",state);
+        activity.startActivity(intent);
+    }
+
+    private void startInformation(String name) {
+        Intent intent = new Intent(activity,Information.class);
+        intent.putExtra("Name",name);
+        activity.startActivity(intent);
     }
 }

@@ -2,80 +2,114 @@
 <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
 
-    <!--<android.support.design.widget.CoordinatorLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:fitsSystemWindows="true">-->
+    <android.support.design.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
 
-        <!--<android.support.design.widget.AppBarLayout-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:fitsSystemWindows="true">-->
-
-            <!--<android.support.v7.widget.Toolbar-->
-                <!--android:id="@+id/toolbar"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="80dp"-->
-                <!--android:fitsSystemWindows="true"-->
-                <!--android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"-->
-                <!--app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />-->
-
-        <!--</android.support.design.widget.AppBarLayout>-->
-
-
-        <RelativeLayout
+        <android.support.design.widget.CollapsingToolbarLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            android:fitsSystemWindows="false">
-            <LinearLayout
-                android:id="@+id/bottomMenu"
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true">
+            android:fitsSystemWindows="true">
 
-                <Button
-                    android:id="@+id/mainButton"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:background="@mipmap/ic_launcher"/>
-
-                <Button
-                    android:id="@+id/mapButton"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:background="@mipmap/ic_launcher"/>
-
-                <Button
-                    android:id="@+id/societyButton"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:background="@mipmap/ic_launcher"/>
-
-                <Button
-                    android:id="@+id/optionButton"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:background="@mipmap/ic_launcher"/>
-            </LinearLayout>
-
-            <FrameLayout
-                android:id="@+id/fragmentPosition"
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_alignParentLeft="true"
-                android:layout_above="@id/bottomMenu"
-                android:fitsSystemWindows="true">
-            </FrameLayout>
-        </RelativeLayout>
-    <!--</android.support.design.widget.CoordinatorLayout>-->
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                android:fitsSystemWindows="true"
+                android:background="@mipmap/background2">
+
+
+                <LinearLayout
+                    android:id="@+id/bottomMenu"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="#00000000">
+
+                    <LinearLayout
+                        android:id="@+id/main"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:id="@+id/mainIcon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_margin="5dp"
+                            android:src="@mipmap/main"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/map"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:id="@+id/mapIcon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_margin="5dp"
+                            android:src="@mipmap/map"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/society"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:id="@+id/societyIcon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_margin="5dp"
+                            android:src="@mipmap/society"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/option"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:id="@+id/optionIcon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_margin="5dp"
+                            android:src="@mipmap/option"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/line"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="@color/transparentWhite"
+                    android:layout_above="@id/bottomMenu"/>
+
+                <FrameLayout
+                    android:id="@+id/fragmentPosition"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentLeft="true"
+                    android:layout_above="@id/line"
+                    android:fitsSystemWindows="true">
+                </FrameLayout>
+          </RelativeLayout>
+        </android.support.design.widget.CollapsingToolbarLayout>
+    </android.support.design.widget.CoordinatorLayout>
 
     <android.support.design.widget.NavigationView
         android:id="@+id/nav"
@@ -83,12 +117,9 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         app:headerLayout="@layout/nav_header"
-        app:menu="@menu/nav_menu"/>
-
-
-
-
-
+        app:menu="@menu/nav_menu"
+        app:itemTextColor="@color/white"
+        android:background="@mipmap/background5"/>
 </android.support.v4.widget.DrawerLayout>
 
 

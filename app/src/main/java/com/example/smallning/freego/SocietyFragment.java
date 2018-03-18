@@ -209,6 +209,7 @@ public class SocietyFragment extends Fragment{
             communityItem.setPictureNum(Integer.parseInt(splitMessage[5]));
             midList.add(communityItem);
         }
+        Log.e("hhhhh",midList.toString());
         return midList;
     }
 

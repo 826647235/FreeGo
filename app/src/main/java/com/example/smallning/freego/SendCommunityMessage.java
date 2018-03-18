@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -56,6 +58,11 @@ public class SendCommunityMessage extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
+        TextView textView = new TextView(SendCommunityMessage.this);
+        textView.setText("发布动态");
+        Toolbar.LayoutParams params = new Toolbar.LayoutParams(Toolbar.LayoutParams.WRAP_CONTENT, Toolbar.LayoutParams.WRAP_CONTENT);
+        params.gravity = Gravity.CENTER_HORIZONTAL;
+        toolbar.addView(textView, params);
 
         LinearLayoutManager layoutManager=new LinearLayoutManager(SendCommunityMessage.this);
         layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
@@ -69,7 +76,7 @@ public class SendCommunityMessage extends AppCompatActivity {
                 ArrayList<String> picturePathList = new ArrayList<>();
                 Intent intent = new Intent(SendCommunityMessage.this, MultiImageSelectorActivity.class);
                 intent.putExtra(MultiImageSelectorActivity.EXTRA_SHOW_CAMERA, true);
-                intent.putExtra(MultiImageSelectorActivity.EXTRA_SELECT_COUNT, 20);
+                intent.putExtra(MultiImageSelectorActivity.EXTRA_SELECT_COUNT, 12);
                 intent.putExtra(MultiImageSelectorActivity.EXTRA_SELECT_MODE, MultiImageSelectorActivity.MODE_MULTI);
                 intent.putStringArrayListExtra(MultiImageSelectorActivity.EXTRA_DEFAULT_SELECTED_LIST, picturePathList);
                 startActivityForResult(intent, 1);
@@ -124,7 +131,7 @@ public class SendCommunityMessage extends AppCompatActivity {
             case R.id.send:
                 final String message = content.getText().toString();
                 if((message.equals("") || message == null) && pictureNum == 0 ) {
-                    Toast.makeText(SendCommunityMessage.this,"动态不能为空",Toast.LENGTH_SHORT);
+                    Toast.makeText(SendCommunityMessage.this,"动态不能为空",Toast.LENGTH_SHORT).show();
                 } else {
                     new Thread(new Runnable() {
                         @Override

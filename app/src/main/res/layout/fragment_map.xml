@@ -1,131 +1,145 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
-    <com.amap.api.maps.MapView
-        android:id="@+id/map"
+    <WebView
+        android:id="@+id/webView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:background="#00000000"/>
+</LinearLayout>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="20dp">
 
-        <Button
-            android:id="@+id/button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="搜索"/>
 
-        <LinearLayout
-            android:id="@+id/backgroundLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/button"
-            android:layout_alignBottom="@id/button"
-            android:layout_alignTop="@id/button"
-            android:background="@color/cardview_light_background">
 
-            <EditText
-                android:id="@+id/searchMessage"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:textCursorDrawable="@drawable/edit_cursor_color"
-                android:background="@null"
-                android:textSize="16sp" />
+<!--<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent" >-->
 
-        </LinearLayout>
+    <!--<com.amap.api.maps.MapView-->
+        <!--android:id="@+id/map"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent" />-->
 
-        <ListView
-            android:id="@+id/POIListView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignLeft="@id/button"
-            android:layout_alignRight="@id/backgroundLayout"
-            android:layout_below="@id/button"
-            android:layout_marginBottom="30dp"
-            android:background="@color/cardview_light_background"
-            android:visibility="gone"
-            android:layout_marginTop="8dp"
-            android:scrollbars="none">
+    <!--<RelativeLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginLeft="16dp"-->
+        <!--android:layout_marginRight="16dp"-->
+        <!--android:layout_marginTop="20dp">-->
 
-        </ListView>
-    </RelativeLayout>
+        <!--<Button-->
+            <!--android:id="@+id/button"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="搜索"/>-->
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/popup"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:background="#ffffff"
-        android:clickable="true"
-        android:elevation="15dp"
-        android:visibility="gone">
+        <!--<LinearLayout-->
+            <!--android:id="@+id/backgroundLayout"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_toRightOf="@id/button"-->
+            <!--android:layout_alignBottom="@id/button"-->
+            <!--android:layout_alignTop="@id/button"-->
+            <!--android:background="@color/cardview_light_background">-->
 
-        <TextView
-            android:id="@+id/name"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginLeft="32dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="16dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textColor="@android:color/black"
-            android:textSize="16sp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            <!--<EditText-->
+                <!--android:id="@+id/searchMessage"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_gravity="center"-->
+                <!--android:textCursorDrawable="@drawable/edit_cursor_color"-->
+                <!--android:background="@null"-->
+                <!--android:textSize="16sp" />-->
 
-        <TextView
-            android:id="@+id/address"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="6dp"
-            android:layout_marginTop="8dp"
-            android:maxLines="1"
-            android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/name"
-            app:layout_constraintVertical_bias="0.0"
-            android:layout_marginLeft="8dp"
-            app:layout_constraintLeft_toLeftOf="@+id/view"
-            app:layout_constraintHorizontal_bias="0.0" />
+        <!--</LinearLayout>-->
 
-        <View
-            android:id="@+id/view"
-            android:layout_width="1dp"
-            android:layout_height="14dp"
-            android:layout_marginBottom="4dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="10dp"
-            android:background="@color/common_google_signin_btn_text_light_disabled"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintLeft_toRightOf="@+id/distance"
-            app:layout_constraintRight_toLeftOf="@+id/address"
-            app:layout_constraintTop_toBottomOf="@+id/name"
-            app:layout_constraintVertical_bias="0.0" />
+        <!--<ListView-->
+            <!--android:id="@+id/POIListView"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_alignLeft="@id/button"-->
+            <!--android:layout_alignRight="@id/backgroundLayout"-->
+            <!--android:layout_below="@id/button"-->
+            <!--android:layout_marginBottom="30dp"-->
+            <!--android:background="@color/cardview_light_background"-->
+            <!--android:visibility="gone"-->
+            <!--android:layout_marginTop="8dp"-->
+            <!--android:scrollbars="none">-->
 
-        <TextView
-            android:id="@+id/distance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="32dp"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/name" />
+        <!--</ListView>-->
+    <!--</RelativeLayout>-->
 
-    </android.support.constraint.ConstraintLayout>
-</FrameLayout>
+    <!--<android.support.constraint.ConstraintLayout-->
+        <!--android:id="@+id/popup"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="bottom"-->
+        <!--android:background="#ffffff"-->
+        <!--android:clickable="true"-->
+        <!--android:elevation="15dp"-->
+        <!--android:visibility="gone">-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/name"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginEnd="8dp"-->
+            <!--android:layout_marginLeft="32dp"-->
+            <!--android:layout_marginRight="8dp"-->
+            <!--android:layout_marginStart="32dp"-->
+            <!--android:layout_marginTop="16dp"-->
+            <!--android:ellipsize="end"-->
+            <!--android:maxLines="1"-->
+            <!--android:textColor="@android:color/black"-->
+            <!--android:textSize="16sp"-->
+            <!--app:layout_constraintLeft_toLeftOf="parent"-->
+            <!--app:layout_constraintRight_toRightOf="parent"-->
+            <!--app:layout_constraintTop_toTopOf="parent" />-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/address"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginBottom="6dp"-->
+            <!--android:layout_marginTop="8dp"-->
+            <!--android:maxLines="1"-->
+            <!--android:textSize="14sp"-->
+            <!--app:layout_constraintBottom_toBottomOf="parent"-->
+            <!--app:layout_constraintRight_toRightOf="parent"-->
+            <!--app:layout_constraintTop_toBottomOf="@+id/name"-->
+            <!--app:layout_constraintVertical_bias="0.0"-->
+            <!--android:layout_marginLeft="8dp"-->
+            <!--app:layout_constraintLeft_toLeftOf="@+id/view"-->
+            <!--app:layout_constraintHorizontal_bias="0.0" />-->
+
+        <!--<View-->
+            <!--android:id="@+id/view"-->
+            <!--android:layout_width="1dp"-->
+            <!--android:layout_height="14dp"-->
+            <!--android:layout_marginBottom="4dp"-->
+            <!--android:layout_marginLeft="8dp"-->
+            <!--android:layout_marginTop="10dp"-->
+            <!--android:background="@color/common_google_signin_btn_text_light_disabled"-->
+            <!--app:layout_constraintBottom_toBottomOf="parent"-->
+            <!--app:layout_constraintHorizontal_bias="0.0"-->
+            <!--app:layout_constraintLeft_toRightOf="@+id/distance"-->
+            <!--app:layout_constraintRight_toLeftOf="@+id/address"-->
+            <!--app:layout_constraintTop_toBottomOf="@+id/name"-->
+            <!--app:layout_constraintVertical_bias="0.0" />-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/distance"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginLeft="32dp"-->
+            <!--android:layout_marginStart="32dp"-->
+            <!--android:layout_marginTop="8dp"-->
+            <!--app:layout_constraintLeft_toLeftOf="parent"-->
+            <!--app:layout_constraintTop_toBottomOf="@+id/name" />-->
+
+    <!--</android.support.constraint.ConstraintLayout>-->
+<!--</FrameLayout>-->

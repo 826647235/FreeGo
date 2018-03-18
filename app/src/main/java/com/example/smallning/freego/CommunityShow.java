@@ -1,17 +1,15 @@
 package com.example.smallning.freego;
 
 import android.graphics.Bitmap;
+import android.os.Parcelable;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
  * Created by Smallning on 2018/3/6.
  */
 
-public class CommunityShow implements Serializable{
+public class CommunityShow {
     private int id;
     private Bitmap portrait = null;
     private String name;
@@ -20,6 +18,8 @@ public class CommunityShow implements Serializable{
     private int likeNum;
     private int pictureNum;
     private List<Bitmap> pictureList = null;
+    private boolean isLike = false;
+    private boolean isCollect = false;
 
     public int getId() {
         return id;
@@ -53,6 +53,14 @@ public class CommunityShow implements Serializable{
         return pictureList;
     }
 
+    public boolean getIsLike() {
+        return isLike;
+    }
+
+    public boolean getIsCollect() {
+        return isCollect;
+    }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -83,5 +91,13 @@ public class CommunityShow implements Serializable{
 
     public void setPictureList(List<Bitmap> pictureList) {
         this.pictureList = pictureList;
+    }
+
+    public void setIsLike(boolean like) {
+        isLike = like;
+    }
+
+    public void setIsCollect(boolean collect) {
+        isCollect = collect;
     }
 }
