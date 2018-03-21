@@ -55,7 +55,6 @@ public class Writing extends AppCompatActivity implements View.OnClickListener{
     private int pictureNum;
     private int likeNumber;
     private PictureAdapter pictureAdapter;
-    private boolean isLike;
     private ImageView collectIcon;
     private ImageView likeIcon;
 
@@ -137,7 +136,10 @@ public class Writing extends AppCompatActivity implements View.OnClickListener{
                             .build();
                     Request request = new Request.Builder().post(body).url("http://106.15.201.54:8080/Freego/getCommentNum").build();
                     Response response = okHttpClient.newCall(request).execute();
-
+                    commentNum = Integer.parseInt(response.body().string().toString());
+                    if(commentNum > 0) {
+                        getComment(Id,"new",0);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -182,6 +184,7 @@ public class Writing extends AppCompatActivity implements View.OnClickListener{
                 }
             }).start();
 
+
             LinearLayoutManager layoutManager1=new LinearLayoutManager(Writing.this);
             layoutManager1.setOrientation(LinearLayoutManager.HORIZONTAL);
             pictureView.setLayoutManager(layoutManager1);
@@ -194,11 +197,6 @@ public class Writing extends AppCompatActivity implements View.OnClickListener{
         commentView.setLayoutManager(layoutManager2);
         commentAdapter = new CommentAdapter(commentList,Writing.this);
         commentView.setAdapter(commentAdapter);
-
-
-
-        getComment(Id,"new",0);
-
         portrait.setOnClickListener(this);
         name.setOnClickListener(this);
         date.setOnClickListener(this);
@@ -275,6 +273,13 @@ public class Writing extends AppCompatActivity implements View.OnClickListener{
                                 likeIcon.setImageResource(R.mipmap.like_click);
                                 likeNum.setText(Integer.valueOf(likeNumber+1));
                                 like.setClickable(false);
+                            } else {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(Writing.this, "网络故障", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                             }
                         } catch (Exception e) {
                             runOnUiThread(new Runnable() {

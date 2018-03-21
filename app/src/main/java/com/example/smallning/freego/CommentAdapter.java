@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -35,6 +36,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
         TextView content;
         TextView likeNum;
         LinearLayout like;
+        ImageView likeIcon;
 
 
         public ViewHolder(View view) {
@@ -45,6 +47,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
             content = view.findViewById(R.id.content);
             likeNum = view.findViewById(R.id.likenum);
             like = view.findViewById(R.id.like);
+            likeIcon = view.findViewById(R.id.likeIcon);
         }
     }
 
@@ -86,7 +89,13 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                            OkHttpClient okHttpClient = new OkHttpClient();
                            RequestBody requestBody = new FormBody.Builder().add("Id",String.valueOf(comment.getId())).build();
                            Request request = new Request.Builder().post(requestBody).url("http://106.15.201.54:8080/Freego/likeComment").build();
-                           okHttpClient.newCall(request).execute();
+                           Response response = okHttpClient.newCall(request).execute();
+                           if(response.body().string().toString().equals("true")) {
+                               viewHolder.likeIcon.setImageResource(R.mipmap.like_click);
+                               viewHolder.likeNum.setText(Integer.valueOf(comment.getLikeNum()+1));
+                               viewHolder.like.setClickable(false);
+                               comment.setIsLike(true);
+                           }
                        } catch (Exception e) {
                            e.printStackTrace();
                        }
@@ -104,6 +113,13 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
         holder.date.setText(singleComment.getDate());
         holder.likeNum.setText(singleComment.getLikeNum());
         holder.content.setText(singleComment.getContent());
+        if(!singleComment.getIsLike()) {
+            holder.likeIcon.setImageResource(R.mipmap.like);
+            holder.like.setClickable(true);
+        } else {
+            holder.likeIcon.setImageResource(R.mipmap.like_click);
+            holder.like.setClickable(false);
+        }
         if (singleComment.getPortrait() == null) {
             new Thread(new Runnable() {
                 @Override

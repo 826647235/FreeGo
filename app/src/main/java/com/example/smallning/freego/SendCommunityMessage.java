@@ -10,23 +10,19 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import id.zelory.compressor.Compressor;
 import me.nereo.multi_image_selector.MultiImageSelectorActivity;
 import okhttp3.FormBody;
 import okhttp3.MultipartBody;
@@ -34,8 +30,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import top.zibin.luban.Luban;
-import top.zibin.luban.OnCompressListener;
 
 public class SendCommunityMessage extends AppCompatActivity {
 
@@ -64,11 +58,7 @@ public class SendCommunityMessage extends AppCompatActivity {
         params.gravity = Gravity.CENTER_HORIZONTAL;
         toolbar.addView(textView, params);
 
-        LinearLayoutManager layoutManager=new LinearLayoutManager(SendCommunityMessage.this);
-        layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        pictureView.setLayoutManager(layoutManager);
-        adapter=new PictureAdapter(pictureList);
-        pictureView.setAdapter(adapter);
+
 
         addPicture.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,28 +83,24 @@ public class SendCommunityMessage extends AppCompatActivity {
                 pictureNum += path.size();
                 for(final String p : path) {
                     File file = new File(p);
-                    Luban.with(this)
-                            .load(file)                                   // 传人要压缩的图片列表
-                            .ignoreBy(100)                                  // 忽略不压缩图片的大小
-                            .setCompressListener(new OnCompressListener() { //设置回调
-                                @Override
-                                public void onStart() {
-                                    // TODO 压缩开始前调用，可以在方法内启动 loading UI
-                                }
-
-                                @Override
-                                public void onSuccess(final File file) {
-                                    pictureList.add(BitmapFactory.decodeFile(file.getPath()));
-                                    pictureView.setVisibility(View.VISIBLE);
-                                    adapter.notifyDataSetChanged();
-                                    pictureFileList.add(file);
-                                }
-                                @Override
-                                public void onError(Throwable e) {
-                                    // TODO 当压缩过程出现问题时调用
-                                }
-                            }).launch();
+                    try {
+                        final File compressedImage = new Compressor(this)
+                                .setMaxWidth(500)
+                                .setMaxHeight(500)
+                                .setQuality(75)
+                                .setCompressFormat(Bitmap.CompressFormat.WEBP)
+                                .compressToFile(file);
+                        pictureList.add(BitmapFactory.decodeFile(compressedImage.getName()));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
+                LinearLayoutManager layoutManager=new LinearLayoutManager(SendCommunityMessage.this);
+                layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+                pictureView.setLayoutManager(layoutManager);
+                adapter=new PictureAdapter(pictureList);
+                pictureView.setAdapter(adapter);
+                pictureView.setVisibility(View.VISIBLE);
             }
         }
     }
@@ -151,8 +137,6 @@ public class SendCommunityMessage extends AppCompatActivity {
                                         .build();
                                 Response response = okHttpClient.newCall(contentRequest).execute();
                                 String Id = response.body().toString();
-                                while(pictureNum != pictureFileList.size()) {
-                                }
                                 for (File picture : pictureFileList) {
                                     okHttpClient = new OkHttpClient();
                                     MultipartBody.Builder builder = new MultipartBody.Builder();
@@ -176,41 +160,4 @@ public class SendCommunityMessage extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-
-//    public class PictureAdapter extends RecyclerView.Adapter<PictureAdapter.ViewHolder> {
-//
-//        private List<Bitmap> pictureList;
-//
-//        class ViewHolder extends RecyclerView.ViewHolder {
-//            ImageView picture;
-//
-//            public ViewHolder(View view) {
-//                super(view);
-//                picture = view.findViewById(R.id.picture);
-//            }
-//        }
-//
-//        public PictureAdapter(List<Bitmap> list) {
-//            pictureList = list;
-//        }
-//
-//        @Override
-//        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-//            View view= LayoutInflater.from(parent.getContext()).inflate(R.layout.picture_list,parent,false);
-//            ViewHolder viewHolder = new ViewHolder(view);
-//            return viewHolder;
-//        }
-//
-//        @Override
-//        public void onBindViewHolder(ViewHolder holder, int position) {
-//            Bitmap singlePicture = pictureList.get(position);
-//            holder.picture.setImageBitmap(singlePicture);
-//        }
-//
-//        @Override
-//        public int getItemCount() {
-//            return pictureList.size();
-//        }
-//    }
 }

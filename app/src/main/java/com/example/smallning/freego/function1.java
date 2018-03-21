@@ -4,16 +4,19 @@ import android.content.Intent;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import id.zelory.compressor.Compressor;
 import me.nereo.multi_image_selector.MultiImageSelectorActivity;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -62,6 +65,43 @@ public class function1 extends AppCompatActivity {
                 path = data.getStringArrayListExtra(MultiImageSelectorActivity.EXTRA_RESULT);
                 for(String p : path) {
                     File file = new File(p);
+//                    try {
+//                        final File compressedImage = new Compressor(this)
+//                                .setMaxWidth(640)
+//                                .setMaxHeight(480)
+//                                .setQuality(75)
+//                                .setCompressFormat(Bitmap.CompressFormat.WEBP)
+//                                .setDestinationDirectoryPath(Environment.getExternalStoragePublicDirectory(
+//                                        Environment.DIRECTORY_PICTURES).getAbsolutePath())
+//                                .compressToFile(file);
+//                        new Thread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                try {
+//                                    OkHttpClient okHttpClient = new OkHttpClient();
+//                                    MultipartBody.Builder builder = new MultipartBody.Builder();
+//                                    builder.addFormDataPart("img",compressedImage.getName(),RequestBody.create(null,compressedImage));
+//                                    RequestBody requestBody = builder.build();
+//                                    Request request = new Request.Builder()
+//                                            .url("http://106.15.201.54:8080/Freego/savePicture")
+//                                            .post(requestBody)
+//                                            .build();
+//                                    Response response = okHttpClient.newCall(request).execute();
+//                                    runOnUiThread(new Runnable() {
+//                                        @Override
+//                                        public void run() {
+//                                            Toast.makeText(function1.this,"succeed",Toast.LENGTH_SHORT).show();
+//                                        }
+//                                    });
+//                                } catch (Exception e) {
+//                                    e.printStackTrace();
+//                                }
+//                            }
+//                        }).start();
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+
                     Luban.with(this)
                             .load(file)                                   // 传人要压缩的图片列表
                             .ignoreBy(100)                                  // 忽略不压缩图片的大小

@@ -13,6 +13,7 @@ public class Comment {
     private String date;
     private String content;
     private int likeNum;
+    private boolean isLike = false;
 
     public void setId(int id) {
         Id = id;
@@ -38,6 +39,10 @@ public class Comment {
         this.likeNum = likeNum;
     }
 
+    public void setIsLike(boolean like) {
+        isLike = like;
+    }
+
     public int getId() {
         return Id;
     }
@@ -60,5 +65,9 @@ public class Comment {
 
     public int getLikeNum() {
         return likeNum;
+    }
+
+    public boolean getIsLike() {
+        return isLike;
     }
 }

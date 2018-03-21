@@ -177,6 +177,13 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.View
                                 viewHolder.likeNum.setText(Integer.valueOf(communityShow.getLikeNum()+1));
                                 viewHolder.like.setClickable(false);
                                 communityShow.setIsLike(true);
+                            } else {
+                                activity.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(activity, "网络故障", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                             }
                         } catch (Exception e) {
                             activity.runOnUiThread(new Runnable() {
@@ -231,7 +238,7 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.View
         holder.date.setText(communityMessage.getDate());
         holder.content.setText(communityMessage.getContent());
         holder.likeNum.setText(String.valueOf(communityMessage.getLikeNum()));
-        if(communityMessage.getIsLike()) {
+        if(!communityMessage.getIsLike()) {
             holder.likeIcon.setImageResource(R.mipmap.like);
             holder.like.setClickable(true);
         } else {
@@ -239,7 +246,7 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.View
             holder.like.setClickable(false);
         }
 
-        if(communityMessage.getIsLike()) {
+        if(!communityMessage.getIsLike()) {
             holder.collectionIcon.setImageResource(R.mipmap.collect);
             holder.collection.setClickable(true);
         } else {
