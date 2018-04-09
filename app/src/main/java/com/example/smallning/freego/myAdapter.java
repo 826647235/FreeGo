@@ -1,5 +1,7 @@
 package com.example.smallning.freego;
 
+import android.app.Activity;
+import android.app.Fragment;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -7,7 +9,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 import java.util.List;
+
+import me.nereo.multi_image_selector.MultiImageSelectorActivity;
+
+import static android.app.Activity.RESULT_FIRST_USER;
 
 /**
  * Created by Smallning on 2017/9/6.
@@ -16,6 +24,7 @@ import java.util.List;
 public class myAdapter extends RecyclerView.Adapter<myAdapter.ViewHolder> {
 
     private List<Item> itemList;
+    OptionFragment fragment;
 
     class ViewHolder extends RecyclerView.ViewHolder {
         View view;
@@ -30,8 +39,9 @@ public class myAdapter extends RecyclerView.Adapter<myAdapter.ViewHolder> {
         }
     }
 
-    public myAdapter(List<Item> items) {
+    public myAdapter(List<Item> items,OptionFragment fragment) {
         itemList=items;
+        this.fragment = fragment;
     }
 
     @Override
@@ -52,17 +62,23 @@ public class myAdapter extends RecyclerView.Adapter<myAdapter.ViewHolder> {
             public void onClick(View view) {
                 Intent intent=null;
                 switch (item.getName()) {
-                    case "功能1":
+                    case "寻觅":
                         intent=new Intent(view.getContext(),function1.class);
                         break;
-                    case "功能2":
-                        intent=new Intent(view.getContext(),function2.class);
+                    case "云相册":
+                        intent=new Intent(view.getContext(),MyPhoto.class);
                         break;
-                    case "功能3":
+                    case "附近的人":
                         intent=new Intent(view.getContext(),function3.class);
                         break;
-                    case "功能4":
-                        intent=new Intent(view.getContext(),function4.class);
+                    case "照片压缩":
+                        ArrayList<String> a = new ArrayList<String>();
+                        intent = new Intent(fragment.getActivity(), MultiImageSelectorActivity.class);
+                        intent.putExtra(MultiImageSelectorActivity.EXTRA_SHOW_CAMERA, true);
+                        intent.putExtra(MultiImageSelectorActivity.EXTRA_SELECT_COUNT, 9);
+                        intent.putExtra(MultiImageSelectorActivity.EXTRA_SELECT_MODE, MultiImageSelectorActivity.MODE_MULTI);
+                        intent.putStringArrayListExtra(MultiImageSelectorActivity.EXTRA_DEFAULT_SELECTED_LIST, a);
+                        fragment.startActivityForResult(intent,RESULT_FIRST_USER);
                         break;
                     default:
                         break;

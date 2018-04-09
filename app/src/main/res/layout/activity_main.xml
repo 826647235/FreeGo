@@ -119,7 +119,8 @@
         app:headerLayout="@layout/nav_header"
         app:menu="@menu/nav_menu"
         app:itemTextColor="@color/white"
-        android:background="@mipmap/background5"/>
+        android:background="@mipmap/background5"
+        app:itemIconTint="@color/white"/>
 </android.support.v4.widget.DrawerLayout>
 
 

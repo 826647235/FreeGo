@@ -10,12 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import okhttp3.FormBody;
@@ -25,12 +24,11 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 /**
- * Created by Smallning on 2018/3/20.
+ * Created by Smallning on 2018/4/2.
  */
 
-public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
-
-    private List<User> usersList;
+public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.ViewHolder> {
+    private List<User> friendsList;
     private List<Bitmap> portraitList = new ArrayList<>();
     Activity activity;
 
@@ -41,6 +39,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         TextView age;
         ImageView sexIcon;
         TextView motto;
+        LinearLayout chat;
         View whole;
 
         public ViewHolder(View view) {
@@ -51,26 +50,37 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             age = view.findViewById(R.id.age);
             sexIcon = view.findViewById(R.id.sexIcon);
             motto = view.findViewById(R.id.motto);
+            chat = view.findViewById(R.id.chat);
             whole = view;
         }
     }
 
-    public UserAdapter(List<User> list,Activity activity) {
-        usersList = list;
+    public FriendAdapter(List<User> list,Activity activity) {
+        friendsList = list;
         this.activity = activity;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view= LayoutInflater.from(parent.getContext()).inflate(R.layout.user_list,parent,false);
+        View view= LayoutInflater.from(parent.getContext()).inflate(R.layout.friend_list,parent,false);
         final ViewHolder viewHolder = new ViewHolder(view);
+        viewHolder.chat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int position = viewHolder.getAdapterPosition();
+                User friend = friendsList.get(position);
+                Intent intent = new Intent(activity,Chat.class);
+                intent.putExtra("Name",friend.getName());
+                activity.startActivity(intent);
+            }
+        });
         viewHolder.whole.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 int position = viewHolder.getAdapterPosition();
-                User user = usersList.get(position);
+                User friend = friendsList.get(position);
                 Intent intent = new Intent(activity,Information.class);
-                intent.putExtra("Name",user.getName());
+                intent.putExtra("Name",friend.getName());
                 activity.startActivity(intent);
             }
         });
@@ -79,10 +89,10 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        final User singleUser = usersList.get(position);
-        holder.name.setText(singleUser.getName());
-        holder.account.setText(singleUser.getAccount());
-        if(singleUser.getSex().equals("男")) {
+        final User singleFriend = friendsList.get(position);
+        holder.name.setText(singleFriend.getName());
+        holder.account.setText(singleFriend.getAccount());
+        if(singleFriend.getSex().equals("男")) {
             Resources res = activity.getResources();
             Bitmap man= BitmapFactory.decodeResource(res, R.mipmap.man);
             holder.sexIcon.setImageBitmap(man);
@@ -91,15 +101,15 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             Bitmap woman= BitmapFactory.decodeResource(res, R.mipmap.woman);
             holder.sexIcon.setImageBitmap(woman);
         }
-        holder.age.setText(singleUser.getAge() + "岁");
-        holder.motto.setText(singleUser.getMotto());
+        holder.age.setText(singleFriend.getAge() + "岁");
+        holder.motto.setText(singleFriend.getMotto());
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     OkHttpClient okHttpClient = new OkHttpClient();
                     RequestBody requestBody = new FormBody.Builder()
-                            .add("Name",singleUser.getName())
+                            .add("Name",singleFriend.getName())
                             .build();
                     Request request = new Request.Builder().post(requestBody).url("http://106.15.201.54:8080/Freego/getPortrait").build();
                     Response response = okHttpClient.newCall(request).execute();
@@ -121,7 +131,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return usersList.size();
+        return friendsList.size();
     }
 
     public void cleanBitmap() {

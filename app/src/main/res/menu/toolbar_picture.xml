@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/send"
-        android:icon="@mipmap/send"
-        android:title="发表"
+        android:id="@+id/add"
+        android:icon="@mipmap/add"
+        android:title="上传"
         android:background="@drawable/send_click"
         app:showAsAction="ifRoom"/>
 

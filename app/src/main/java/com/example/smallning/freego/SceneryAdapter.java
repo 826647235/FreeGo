@@ -44,12 +44,12 @@ public class SceneryAdapter extends RecyclerView.Adapter<SceneryAdapter.ViewHold
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view= LayoutInflater.from(parent.getContext()).inflate(R.layout.scenery_list,parent,false);
-        ImageView imgView= view.findViewById(R.id.picture);
-        ViewGroup.LayoutParams layoutParams = imgView.getLayoutParams();
+        final ViewHolder viewHolder = new ViewHolder(view);
+        ViewGroup.LayoutParams layoutParams = viewHolder.picture.getLayoutParams();
         layoutParams.width = width/2-10;
         layoutParams.height = (int)(layoutParams.width*0.7);
-        imgView.setLayoutParams(layoutParams);
-        final ViewHolder viewHolder = new ViewHolder(view);
+        viewHolder.picture.setLayoutParams(layoutParams);
+
         viewHolder.sceneryView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

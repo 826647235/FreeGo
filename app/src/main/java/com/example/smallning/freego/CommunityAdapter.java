@@ -92,6 +92,7 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.View
             @Override
             public void onClick(View view) {
                 int position = viewHolder.getAdapterPosition();
+                Log.e("HHHHH",position + "");
                 CommunityShow communityShow = communityList.get(position);
                 startInformation(communityShow.getName());
             }
@@ -110,43 +111,46 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.View
             public void onClick(View view) {
                 int position = viewHolder.getAdapterPosition();
                 final CommunityShow communityShow = communityList.get(position);
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            OkHttpClient okHttpClient = new OkHttpClient();
-                            RequestBody requestBody = new FormBody.Builder()
-                                    .add("Name", ((GlobalVariable) activity.getApplication()).getName())
-                                    .add("Id", String.valueOf(communityShow.getId()))
-                                    .build();
-                            Request request = new Request.Builder().post(requestBody).url("http://106.15.201.54:8080/Freego/collection").build();
-                            Response response = okHttpClient.newCall(request).execute();
-                            final String resBody = response.body().string().toString();
-                            activity.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (resBody.equals("true")) {
-                                        Toast.makeText(activity, "收藏成功", Toast.LENGTH_SHORT).show();
-                                        viewHolder.collectionIcon.setImageResource(R.mipmap.collect_click);
-                                        viewHolder.collectionState.setText("已收藏");
-                                        viewHolder.collection.setClickable(false);
-                                        communityShow.setIsCollect(true);
-                                    } else {
+                if (communityShow.getIsCollect()) {
+                    Toast.makeText(activity, "已经收藏了", Toast.LENGTH_SHORT).show();
+                } else {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                OkHttpClient okHttpClient = new OkHttpClient();
+                                RequestBody requestBody = new FormBody.Builder()
+                                        .add("Name", ((GlobalVariable) activity.getApplication()).getName())
+                                        .add("Id", String.valueOf(communityShow.getId()))
+                                        .build();
+                                Request request = new Request.Builder().post(requestBody).url("http://106.15.201.54:8080/Freego/collection").build();
+                                Response response = okHttpClient.newCall(request).execute();
+                                final String resBody = response.body().string().toString();
+                                activity.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (resBody.equals("true")) {
+                                            Toast.makeText(activity, "收藏成功", Toast.LENGTH_SHORT).show();
+                                            viewHolder.collectionIcon.setImageResource(R.mipmap.collect_click);
+                                            viewHolder.collectionState.setText("已收藏");
+                                            communityShow.setIsCollect(true);
+                                        } else {
+                                            Toast.makeText(activity, "网络故障", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
+                            } catch (Exception e) {
+                                activity.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
                                         Toast.makeText(activity, "网络故障", Toast.LENGTH_SHORT).show();
                                     }
-                                }
-                            });
-                        } catch (Exception e) {
-                            activity.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(activity, "网络故障", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                            e.printStackTrace();
+                                });
+                                e.printStackTrace();
+                            }
                         }
-                    }
-                }).start();
+                    }).start();
+                }
             }
         });
         viewHolder.comment.setOnClickListener(new View.OnClickListener() {
@@ -157,54 +161,70 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.View
                 startNew("Comment",communityShow);
             }
         });
+
         viewHolder.like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 int position = viewHolder.getAdapterPosition();
                 final CommunityShow communityShow = communityList.get(position);
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            OkHttpClient okHttpClient = new OkHttpClient();
-                            RequestBody requestBody = new FormBody.Builder()
-                                    .add("Id",String.valueOf(communityShow.getId()))
-                                    .build();
-                            Request request = new Request.Builder().post(requestBody).url("http://106.15.201.54:8080/Freego/like").build();
-                            Response response = okHttpClient.newCall(request).execute();
-                            if(response.body().string().toString().equals("true")) {
-                                viewHolder.likeIcon.setImageResource(R.mipmap.like_click);
-                                viewHolder.likeNum.setText(Integer.valueOf(communityShow.getLikeNum()+1));
-                                viewHolder.like.setClickable(false);
-                                communityShow.setIsLike(true);
-                            } else {
+                if(communityShow.getIsLike()) {
+                    Toast.makeText(activity, "已经赞过了", Toast.LENGTH_SHORT).show();
+                } else {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                OkHttpClient okHttpClient = new OkHttpClient();
+                                RequestBody requestBody = new FormBody.Builder()
+                                        .add("Name", ((GlobalVariable) activity.getApplication()).getName())
+                                        .add("Id",String.valueOf(communityShow.getId()))
+                                        .build();
+                                Request request = new Request.Builder().post(requestBody).url("http://106.15.201.54:8080/Freego/like").build();
+                                Response response = okHttpClient.newCall(request).execute();
+                                if(response.body().string().toString().equals("true")) {
+                                    activity.runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            viewHolder.likeIcon.setImageResource(R.mipmap.like_click);
+                                            communityShow.setLikeNum(communityShow.getLikeNum()+1);
+                                            viewHolder.likeNum.setText(String.valueOf(communityShow.getLikeNum()));
+                                            communityShow.setIsLike(true);
+                                            Toast.makeText(activity, "点赞成功", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                } else {
+                                    activity.runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(activity, "网络故障", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }
+                            } catch (Exception e) {
                                 activity.runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         Toast.makeText(activity, "网络故障", Toast.LENGTH_SHORT).show();
                                     }
                                 });
+                                e.printStackTrace();
                             }
-                        } catch (Exception e) {
-                            activity.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(activity, "网络故障", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                            e.printStackTrace();
                         }
-                    }
-                }).start();
+                    }).start();
+                }
             }
         });
         return viewHolder;
-
     }
 
     @Override
     public void onBindViewHolder(final CommunityAdapter.ViewHolder holder, int position) {
         final CommunityShow communityMessage = communityList.get(position);
+        if(communityMessage.getIsLike()) {
+            holder.likeIcon.setImageResource(R.mipmap.like_click);
+        } else {
+            holder.likeIcon.setImageResource(R.mipmap.like);
+        }
         if (communityMessage.getPortrait() == null) {
             new Thread(new Runnable() {
                 @Override
@@ -212,7 +232,7 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.View
                     try {
                         OkHttpClient okHttpClient = new OkHttpClient();
                         RequestBody body = new FormBody.Builder()
-                                .add("name",communityMessage.getName())
+                                .add("Name",communityMessage.getName())
                                 .build();
                         Request request = new Request.Builder().post(body).url("http://106.15.201.54:8080/Freego/getPortrait").build();
                         Response response = okHttpClient.newCall(request).execute();
@@ -240,23 +260,26 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.View
         holder.likeNum.setText(String.valueOf(communityMessage.getLikeNum()));
         if(!communityMessage.getIsLike()) {
             holder.likeIcon.setImageResource(R.mipmap.like);
-            holder.like.setClickable(true);
         } else {
             holder.likeIcon.setImageResource(R.mipmap.like_click);
-            holder.like.setClickable(false);
         }
 
         if(!communityMessage.getIsLike()) {
             holder.collectionIcon.setImageResource(R.mipmap.collect);
-            holder.collection.setClickable(true);
+            holder.collectionState.setText("收藏");
         } else {
             holder.collectionIcon.setImageResource(R.mipmap.collect_click);
-            holder.collection.setClickable(false);
+            holder.collectionState.setText("已收藏");
         }
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(activity);
+        layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        holder.pictureView.setLayoutManager(layoutManager);
 
         if (communityMessage.getPictureNum() != 0) {
             if (communityMessage.getPictureList() == null) {
                 communityMessage.setPictureList(new ArrayList<Bitmap>());
+                final PictureAdapter adapter = new PictureAdapter(communityMessage.getPictureList());
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -264,6 +287,7 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.View
                             OkHttpClient okHttpClient = new OkHttpClient();
                             int Count = 1;
                             while (true) {
+                                Log.e("HHHHHHH","Count is :  "+ Count);
                                 RequestBody requestBody = new FormBody.Builder()
                                         .add("Id", String.valueOf(communityMessage.getId()))
                                         .add("Count", String.valueOf(Count))
@@ -273,6 +297,12 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.View
                                 byte[] picture = response.body().bytes();
                                 Bitmap bitmap = BitmapFactory.decodeByteArray(picture, 0, picture.length);
                                 communityMessage.getPictureList().add(bitmap);
+                                activity.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        adapter.notifyDataSetChanged();
+                                    }
+                                });
                                 if (Count == communityMessage.getPictureNum()) {
                                     break;
                                 }
@@ -283,17 +313,21 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.View
                         }
                     }
                 }).start();
+                holder.pictureView.setAdapter(adapter);
+            } else {
+                PictureAdapter adapter = new PictureAdapter(communityMessage.getPictureList());
+                holder.pictureView.setAdapter(adapter);
             }
         } else {
             if(communityMessage.getPictureList() == null) {
                 communityMessage.setPictureList(new ArrayList<Bitmap>());
+                PictureAdapter adapter = new PictureAdapter(communityMessage.getPictureList());
+                holder.pictureView.setAdapter(adapter);
+            } else {
+                PictureAdapter adapter = new PictureAdapter(communityMessage.getPictureList());
+                holder.pictureView.setAdapter(adapter);
             }
         }
-        LinearLayoutManager layoutManager = new LinearLayoutManager(activity);
-        layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        holder.pictureView.setLayoutManager(layoutManager);
-        PictureAdapter adapter = new PictureAdapter(communityMessage.getPictureList());
-        holder.pictureView.setAdapter(adapter);
     }
     @Override
     public int getItemCount() {

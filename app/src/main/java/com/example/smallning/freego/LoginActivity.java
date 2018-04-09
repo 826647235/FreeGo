@@ -1,6 +1,7 @@
 package com.example.smallning.freego;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.ActionBar;
@@ -37,6 +38,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private final int NETWORK_ERROR =4;
     private final int REGISTER_SUCCEED = 5;
     private final int REGISTER_FAILED = 6;
+    private String accountText;
+    private String passwordText;
 
     private Handler handler = new Handler() {
         @Override
@@ -44,18 +47,23 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             switch (msg.what) {
                 case LOGIN_SUCCEED:
                     Toast.makeText(LoginActivity.this,"登陆成功",Toast.LENGTH_SHORT).show();
+                    setResult(RESULT_OK);
+                    finish();
                     break;
                 case LOGIN_FAILED:
                     Toast.makeText(LoginActivity.this,"账号或密码错误",Toast.LENGTH_SHORT).show();
                     break;
                 case REGISTER_SUCCEED:
-                    Toast.makeText(LoginActivity.this,"注册成功",Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(LoginActivity.this,Register.class);
+                    intent.putExtra("Account",accountText);
+                    intent.putExtra("Password",passwordText);
+                    startActivityForResult(intent,1);
                     break;
                 case REGISTER_FAILED:
                     Toast.makeText(LoginActivity.this,"该账号已存在",Toast.LENGTH_SHORT).show();
                     break;
                 case NETWORK_ERROR:
-                    Toast.makeText(LoginActivity.this,"网络错误",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this,"网络故障",Toast.LENGTH_SHORT).show();
                     break;
                 default:
                     break;
@@ -76,6 +84,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         surePassword = (EditText) findViewById(R.id.surePassword);
         line = findViewById(R.id.line);
 
+        SharedPreferences login = getSharedPreferences("Login",MODE_PRIVATE);
+        String acc = login.getString("Account",null);
+        if(acc != null) {
+            account.setText(acc);
+            password.setText(login.getString("Password",null));
+        }
         loginChange.setOnClickListener(this);
         registerChange.setOnClickListener(this);
         ok.setOnClickListener(this);
@@ -88,8 +102,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 if (state != LOGIN) {
                     surePassword.setVisibility(View.GONE);
                     line.setVisibility(View.GONE);
-                    loginChange.setBackgroundResource(R.drawable.transparentBlack);
-                    registerChange.setBackgroundResource(R.drawable.transparentWhite);
+                    loginChange.setBackgroundColor(getResources().getColor((R.color.transparentBlack)));
+                    registerChange.setBackgroundColor(getResources().getColor((R.color.transparentWhite)));
                     ok.setText("登录");
                     state = LOGIN;
                 }
@@ -98,31 +112,31 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 if (state != REGISTER) {
                     surePassword.setVisibility(View.VISIBLE);
                     line.setVisibility(View.VISIBLE);
-                    loginChange.setBackgroundResource(R.drawable.transparentWhite);
-                    registerChange.setBackgroundResource(R.drawable.transparentBlack);
+                    loginChange.setBackgroundColor(getResources().getColor((R.color.transparentWhite)));
+                    registerChange.setBackgroundColor(getResources().getColor((R.color.transparentBlack)));
                     ok.setText("注册");
                     state = REGISTER;
                 }
                 break;
             case R.id.ok:
                 if (state == LOGIN) {
-                    String Acc = account.getText().toString();
-                    String Pas = password.getText().toString();
-                    if (Acc == null || Acc.equals("") || Pas == null || Pas.equals("")) {
+                    accountText = account.getText().toString();
+                    passwordText = password.getText().toString();
+                    if (accountText.equals("") || passwordText.equals("")) {
                         Toast.makeText(LoginActivity.this, "账号和密码不能为空", Toast.LENGTH_SHORT).show();
                     } else {
-                        Login(Acc,Pas);
+                        Login();
                     }
                 } else if (state == REGISTER) {
-                    String Acc = account.getText().toString();
-                    String Pas = password.getText().toString();
+                    accountText = account.getText().toString();
+                    passwordText = password.getText().toString();
                     String surePas = surePassword.getText().toString();
-                    if (Acc == null || Acc.equals("") || Pas == null || Pas.equals("") || surePas == null || surePas.equals("")) {
+                    if (accountText.equals("") || passwordText.equals("") || surePas.equals("")) {
                         Toast.makeText(LoginActivity.this, "不能为空", Toast.LENGTH_SHORT).show();
-                    } else if (!Pas.equals(surePas)) {
+                    } else if (!passwordText.equals(surePas)) {
                         Toast.makeText(LoginActivity.this, "两次输入密码不一致", Toast.LENGTH_SHORT).show();
                     } else {
-                        Register(Acc,Pas);
+                        Register();
                     }
                 }
                 break;
@@ -131,20 +145,39 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    private void Login(final String account, final String password) {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                setResult(RESULT_OK);
+                finish();
+            }
+        }
+    }
+
+    private void Login() {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     OkHttpClient client = new OkHttpClient();
                     RequestBody requestBody = new FormBody.Builder()
-                            .add("Account", account)
-                            .add("Password", password)
+                            .add("Account", accountText)
+                            .add("Password", passwordText)
                             .build();
                     Request request = new Request.Builder().url("http://106.15.201.54:8080/Freego/login").post(requestBody).build();
                     Response response = client.newCall(request).execute();
                     Message message = new Message();
-                    if (response.body().string().toString().equals("true")) {
+                    String text = response.body().string().toString();
+                    if (!text.equals("")) {
+                        GlobalVariable globalVariable = (GlobalVariable)getApplication();
+                        globalVariable.setAccount(accountText);
+                        globalVariable.setName(text);
+                        SharedPreferences sharedPreferences = getSharedPreferences("Login", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("Account", accountText);
+                        editor.putString("Password", passwordText);
+                        editor.commit();
                         message.what = LOGIN_SUCCEED;
                     } else {
                         message.what = LOGIN_FAILED;
@@ -160,18 +193,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }).start();
     }
 
-    private void Register(final String account, final String password) {
+    private void Register() {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     OkHttpClient client = new OkHttpClient();
                     RequestBody requestBody = new FormBody.Builder()
-                            .add("Account", account)
-                            .add("Password", password)
+                            .add("Account", accountText)
+                            .add("Password", passwordText)
                             .build();
-                    Request request = new Request.Builder().url("http://106.15.201.54:8080/Freego/register").post(requestBody).build();
-                    Response response = client.newCall(request).execute();
+                    Request request = new Request.Builder().url("http://106.15.201.54:8080/Freego/checkRepeat").post(requestBody).build();
+                    final Response response = client.newCall(request).execute();
                     Message message = new Message();
                     if (response.body().string().toString().equals("true")) {
                         message.what = REGISTER_SUCCEED;

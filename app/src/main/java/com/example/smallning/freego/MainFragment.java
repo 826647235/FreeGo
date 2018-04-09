@@ -29,7 +29,6 @@ public class MainFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main,container,false);
-
         sceneryView = view.findViewById(R.id.sceneryView);
         WindowManager wm = getActivity().getWindowManager();
         int width = wm.getDefaultDisplay().getWidth();
@@ -82,6 +81,4 @@ public class MainFragment extends Fragment {
         sceneryList.add(new Scenery("香港",R.mipmap.xianggang,"https://m.tuniu.com/g1300/guide-0-0/"));
         sceneryList.add(new Scenery("澳门",R.mipmap.aomen,"https://m.tuniu.com/g2002/guide-0-0/"));
     }
-
-
 }

@@ -17,9 +17,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.amap.api.maps.model.Text;
-import com.amap.api.services.cloud.CloudImage;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -57,9 +56,10 @@ public class Writing extends AppCompatActivity implements View.OnClickListener{
     private PictureAdapter pictureAdapter;
     private ImageView collectIcon;
     private ImageView likeIcon;
-
+    private TextView commentNumText;
     private Bitmap needClear = null;
     private int commentNum;
+    private TextView collectionText;
 
 
 
@@ -83,6 +83,8 @@ public class Writing extends AppCompatActivity implements View.OnClickListener{
         commentContent = (EditText)findViewById(R.id.commentContent);
         collectIcon = (ImageView)findViewById(R.id.collectIcon);
         likeIcon = (ImageView)findViewById(R.id.likeIcon);
+        commentNumText = (TextView)findViewById(R.id.commentNum);
+        collectionText = (TextView)findViewById(R.id.collectionText);
 
         final Intent intent = getIntent();
         Id = intent.getIntExtra("Id",0);
@@ -92,12 +94,11 @@ public class Writing extends AppCompatActivity implements View.OnClickListener{
 
         if(intent.getBooleanExtra("IsLike",false)) {
             likeIcon.setImageResource(R.mipmap.like_click);
-            like.setClickable(false);
         }
 
         if(intent.getBooleanExtra("IsCollect",false)) {
             collectIcon.setImageResource(R.mipmap.collect_click);
-            collection.setClickable(false);
+            collectionText.setText("已收藏");
         }
 
 
@@ -107,7 +108,7 @@ public class Writing extends AppCompatActivity implements View.OnClickListener{
                 try {
                     OkHttpClient okHttpClient = new OkHttpClient();
                     RequestBody body = new FormBody.Builder()
-                            .add("name",intent.getStringExtra("Name"))
+                            .add("Name",intent.getStringExtra("Name"))
                             .build();
                     Request request = new Request.Builder().post(body).url("http://106.15.201.54:8080/Freego/getPortrait").build();
                     Response response = okHttpClient.newCall(request).execute();
@@ -132,11 +133,18 @@ public class Writing extends AppCompatActivity implements View.OnClickListener{
                 try {
                     OkHttpClient okHttpClient = new OkHttpClient();
                     RequestBody body = new FormBody.Builder()
-                            .add("name",String.valueOf(Id))
+                            .add("Id",String.valueOf(Id))
                             .build();
                     Request request = new Request.Builder().post(body).url("http://106.15.201.54:8080/Freego/getCommentNum").build();
                     Response response = okHttpClient.newCall(request).execute();
-                    commentNum = Integer.parseInt(response.body().string().toString());
+                    final String message = response.body().string().toString();
+                    commentNum = Integer.parseInt(message);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            commentNumText.setText(String.valueOf(commentNum));
+                        }
+                    });
                     if(commentNum > 0) {
                         getComment(Id,"new",0);
                     }
@@ -193,7 +201,7 @@ public class Writing extends AppCompatActivity implements View.OnClickListener{
         }
 
         LinearLayoutManager layoutManager2=new LinearLayoutManager(Writing.this);
-        layoutManager2.setOrientation(LinearLayoutManager.HORIZONTAL);
+        layoutManager2.setOrientation(LinearLayoutManager.VERTICAL);
         commentView.setLayoutManager(layoutManager2);
         commentAdapter = new CommentAdapter(commentList,Writing.this);
         commentView.setAdapter(commentAdapter);
@@ -219,84 +227,95 @@ public class Writing extends AppCompatActivity implements View.OnClickListener{
                 startInformation(itemName);
                 break;
             case R.id.collection:
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            OkHttpClient okHttpClient = new OkHttpClient();
-                            RequestBody requestBody = new FormBody.Builder()
-                                    .add("Name", ((GlobalVariable)getApplication()).getName())
-                                    .add("Id", String.valueOf(Id))
-                                    .build();
-                            Request request = new Request.Builder().post(requestBody).url("http://106.15.201.54:8080/Freego/collection").build();
-                            Response response = okHttpClient.newCall(request).execute();
-                            final String resBody = response.body().string().toString();
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (resBody.equals("true")) {
-                                        Toast.makeText(Writing.this, "收藏成功", Toast.LENGTH_SHORT).show();
-                                    } else {
-                                        Toast.makeText(Writing.this, "网络故障", Toast.LENGTH_SHORT).show();
+                if(getIntent().getBooleanExtra("IsCollect",false)) {
+                    Toast.makeText(Writing.this,"已经收藏了",Toast.LENGTH_SHORT).show();
+                } else {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                OkHttpClient okHttpClient = new OkHttpClient();
+                                RequestBody requestBody = new FormBody.Builder()
+                                        .add("Name", ((GlobalVariable)getApplication()).getName())
+                                        .add("Id", String.valueOf(Id))
+                                        .build();
+                                Request request = new Request.Builder().post(requestBody).url("http://106.15.201.54:8080/Freego/collection").build();
+                                Response response = okHttpClient.newCall(request).execute();
+                                final String resBody = response.body().string().toString();
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (resBody.equals("true")) {
+                                            Toast.makeText(Writing.this, "收藏成功", Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            Toast.makeText(Writing.this, "网络故障", Toast.LENGTH_SHORT).show();
+                                        }
                                     }
-                                }
-                            });
-                        } catch (Exception e) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(Writing.this, "网络故障", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                            e.printStackTrace();
-                        }
-                    }
-                }).start();
-                break;
-            case R.id.comment:
-                Toast.makeText(Writing.this,"comment is clicked",Toast.LENGTH_SHORT).show();
-                sendComment.clearAnimation();
-                sendComment.setVisibility(View.VISIBLE);
-                break;
-            case R.id.like:
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            OkHttpClient okHttpClient = new OkHttpClient();
-                            RequestBody requestBody = new FormBody.Builder()
-                                    .add("Id",String.valueOf(Id))
-                                    .build();
-                            Request request = new Request.Builder().post(requestBody).url("http://106.15.201.54:8080/Freego/like").build();
-                            Response response = okHttpClient.newCall(request).execute();
-                            if(response.body().string().toString().equals("true")) {
-                                likeIcon.setImageResource(R.mipmap.like_click);
-                                likeNum.setText(Integer.valueOf(likeNumber+1));
-                                like.setClickable(false);
-                            } else {
+                                });
+                            } catch (Exception e) {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         Toast.makeText(Writing.this, "网络故障", Toast.LENGTH_SHORT).show();
                                     }
                                 });
+                                e.printStackTrace();
                             }
-                        } catch (Exception e) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(Writing.this, "网络故障", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                            e.printStackTrace();
                         }
-                    }
-                }).start();
-                likeNum.setText(String.valueOf(likeNumber+1));
-                like.setClickable(false);
+                    }).start();
+                }
+                break;
+            case R.id.comment:
+                sendComment.clearAnimation();
+                sendComment.setVisibility(View.VISIBLE);
+                break;
+            case R.id.like:
+                if(getIntent().getBooleanExtra("IsLike",false)) {
+                    Toast.makeText(Writing.this,"已经赞过了",Toast.LENGTH_SHORT).show();
+                } else {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                OkHttpClient okHttpClient = new OkHttpClient();
+                                RequestBody requestBody = new FormBody.Builder()
+                                        .add("Id",String.valueOf(Id))
+                                        .build();
+                                Request request = new Request.Builder().post(requestBody).url("http://106.15.201.54:8080/Freego/like").build();
+                                Response response = okHttpClient.newCall(request).execute();
+                                if(response.body().string().toString().equals("true")) {
+                                    likeIcon.setImageResource(R.mipmap.like_click);
+                                    likeNum.setText(Integer.valueOf(likeNumber+1));
+                                    like.setClickable(false);
+                                } else {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(Writing.this, "网络故障", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }
+                            } catch (Exception e) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(Writing.this, "网络故障", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                                e.printStackTrace();
+                            }
+                        }
+                    }).start();
+                    likeNum.setText(String.valueOf(likeNumber+1));
+                    like.setClickable(false);
+                }
                 break;
             case R.id.loadMore:
-                getComment(Id,"old",commentList.get(commentList.size()-1).getId());
+                if(commentList.size() == 0) {
+                    getComment(Id,"new",0);
+                } else {
+                    getComment(Id,"old",commentList.get(commentList.size()-1).getId());
+                }
                 break;
             case R.id.send:
                 if(commentContent.getText() == null ||commentContent.getText().equals("")) {
@@ -306,12 +325,14 @@ public class Writing extends AppCompatActivity implements View.OnClickListener{
                         @Override
                         public void run() {
                             try{
+                                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
                                 Date date = new Date(System.currentTimeMillis());
+                                String dateString = simpleDateFormat.format(date);
                                 OkHttpClient okHttpClient = new OkHttpClient();
                                 RequestBody requestBody = new FormBody.Builder()
                                         .add("Id",String.valueOf(Id))
                                         .add("Name",((GlobalVariable)getApplication()).getName())
-                                        .add("Date",date.toString())
+                                        .add("Date",dateString)
                                         .add("Content",commentContent.getText().toString())
                                         .build();
                                 Request request = new Request.Builder().post(requestBody).url("http://106.15.201.54:8080/Freego/saveComment").build();
@@ -337,7 +358,7 @@ public class Writing extends AppCompatActivity implements View.OnClickListener{
                     OkHttpClient okHttpClient = new OkHttpClient();
                     RequestBody requestBody = new FormBody.Builder()
                             .add("Id", String.valueOf(Id))
-                            .add("State ", state)
+                            .add("State", state)
                             .add("Position", String.valueOf(position))
                             .build();
                     Request request = new Request.Builder().post(requestBody).url("http://106.15.201.54:8080/Freego/getComment").build();

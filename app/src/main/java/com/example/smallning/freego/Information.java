@@ -5,16 +5,16 @@ import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
-import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.amap.api.maps.model.Text;
 
-import java.util.List;
-
+import de.hdodenhof.circleimageview.CircleImageView;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -24,8 +24,9 @@ import okhttp3.Response;
 public class Information extends AppCompatActivity {
 
     private String getName;
-    private ImageView portrait;
+    private CircleImageView portrait;
     private TextView name;
+    private TextView age;
     private TextView motto;
     private TextView addFriend;
     private ImageView sexIcon;
@@ -43,8 +44,10 @@ public class Information extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_information);
         getName = getIntent().getStringExtra("Name");
-        portrait = (ImageView)findViewById(R.id.portrait);
+        Log.e("HHHHH",getName);
+        portrait = (CircleImageView) findViewById(R.id.portrait);
         name = (TextView)findViewById(R.id.name);
+        age = (TextView)findViewById(R.id.age);
         motto = (TextView)findViewById(R.id.motto);
         sexIcon = (ImageView)findViewById(R.id.sexIcon);
         photo1 = (ImageView)findViewById(R.id.photo1);
@@ -64,7 +67,8 @@ public class Information extends AppCompatActivity {
                         try {
                             OkHttpClient okHttpClient = new OkHttpClient();
                             RequestBody requestBody = new FormBody.Builder()
-                                    .add("Name", getName)
+                                    .add("Name1", ((GlobalVariable)getApplication()).getName())
+                                    .add("Name2", getName)
                                     .build();
                             Request request = new Request.Builder().post(requestBody).url("http://106.15.201.54:8080/Freego/addFriend").build();
                             Response response = okHttpClient.newCall(request).execute();
@@ -73,6 +77,9 @@ public class Information extends AppCompatActivity {
                                     @Override
                                     public void run() {
                                         Toast.makeText(Information.this, "关注成功", Toast.LENGTH_SHORT).show();
+                                        addFriend.setText("已关注");
+                                        addFriend.setTextColor(getResources().getColor(R.color.transparentWhite));
+                                        addFriend.setClickable(false);
                                     }
                                 });
                             }
@@ -83,7 +90,6 @@ public class Information extends AppCompatActivity {
                 }).start();
             }
         });
-
         name.setText(getName);
         final Thread thread = new Thread(new Runnable() {
             @Override
@@ -91,19 +97,33 @@ public class Information extends AppCompatActivity {
                 try {
                     OkHttpClient okHttpClient = new OkHttpClient();
                     RequestBody requestBody = new FormBody.Builder()
+                            .add("UserName",((GlobalVariable)getApplication()).getName())
                             .add("Name",getName)
                             .build();
                     Request request = new Request.Builder().post(requestBody).url("http://106.15.201.54:8080/Freego/getUser").build();
                     Response response = okHttpClient.newCall(request).execute();
                     String userMessage = response.body().string().toString();
-                    String[] splitMessage = userMessage.split("##,##");
-                    if(splitMessage[0].equals("男")) {
-                        sexIcon.setImageResource(R.mipmap.man);
-                    } else {
-                        sexIcon.setImageResource(R.mipmap.woman);
-                    }
-                    motto.setText(splitMessage[1]);
-                    photoNum = Integer.valueOf(splitMessage[1]);
+                    Log.e("HHHHH",userMessage);
+                    final String[] splitMessage = userMessage.split("##,##");
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            age.setText(splitMessage[0]);
+                            if(splitMessage[1].equals("男")) {
+                                sexIcon.setImageResource(R.mipmap.man);
+                            } else {
+                                sexIcon.setImageResource(R.mipmap.woman);
+                            }
+                            motto.setText(splitMessage[2]);
+                            photoNum = Integer.valueOf(splitMessage[3]);
+                            if(splitMessage[4].equals("false")) {
+                                addFriend.setText("已关注");
+                                addFriend.setTextColor(getResources().getColor(R.color.transparentWhite));
+                                addFriend.setClickable(false);
+                            }
+                        }
+                    });
+
                 } catch ( Exception e) {
                     e.printStackTrace();
                 }
@@ -133,6 +153,13 @@ public class Information extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        WindowManager wm = getWindowManager();
+        int width = wm.getDefaultDisplay().getWidth()/3-10;
+        setWidth(cPhoto1,width);
+        setWidth(cPhoto2,width);
+        setWidth(cPhoto3,width);
+
         if(photoNum > 0 && photoNum <= 3) {
             switch (photoNum) {
                 case 3:
@@ -150,6 +177,13 @@ public class Information extends AppCompatActivity {
             getPhoto(2);
             getPhoto(3);
         }
+    }
+
+    private void setWidth(CardView cardView,int width) {
+        ViewGroup.LayoutParams layoutParams = cardView.getLayoutParams();
+        layoutParams.width = width;
+        layoutParams.height = width;
+        cardView.setLayoutParams(layoutParams);
     }
 
     private void getPhoto(final int number) {

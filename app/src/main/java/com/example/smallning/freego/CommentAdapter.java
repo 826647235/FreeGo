@@ -58,7 +58,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view= LayoutInflater.from(parent.getContext()).inflate(R.layout.comment_list,parent,false);
+        View view= LayoutInflater.from(parent.getContext()).inflate(R.layout.comment_list,null);
         final ViewHolder viewHolder = new ViewHolder(view);
 
         viewHolder.portrait.setOnClickListener(new View.OnClickListener() {
@@ -111,7 +111,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
         final Comment singleComment = commentList.get(position);
         holder.name.setText(singleComment.getName());
         holder.date.setText(singleComment.getDate());
-        holder.likeNum.setText(singleComment.getLikeNum());
+        holder.likeNum.setText(String.valueOf(singleComment.getLikeNum()));
         holder.content.setText(singleComment.getContent());
         if(!singleComment.getIsLike()) {
             holder.likeIcon.setImageResource(R.mipmap.like);
@@ -127,7 +127,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                     try {
                         OkHttpClient okHttpClient = new OkHttpClient();
                         RequestBody body = new FormBody.Builder()
-                                .add("name",singleComment.getName())
+                                .add("Name",singleComment.getName())
                                 .build();
                         Request request = new Request.Builder().post(body).url("http://106.15.201.54:8080/Freego/getPortrait").build();
                         Response response = okHttpClient.newCall(request).execute();

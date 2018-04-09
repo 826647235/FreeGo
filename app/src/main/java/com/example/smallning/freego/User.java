@@ -5,8 +5,9 @@ package com.example.smallning.freego;
  */
 
 public class User {
-    String account;
     String name;
+    String account;
+    int age;
     String sex;
     String motto;
 
@@ -16,6 +17,10 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
     }
 
     public void setSex(String sex) {
@@ -28,6 +33,10 @@ public class User {
 
     public String getAccount() {
         return account;
+    }
+
+    public int getAge() {
+        return age;
     }
 
     public String getName() {

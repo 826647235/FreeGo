@@ -49,6 +49,7 @@ public class SearchFriend extends AppCompatActivity {
             @Override
             public void afterTextChanged(final Editable editable) {
                 adapter.cleanBitmap();
+                userView.removeAllViews();
                 userList.clear();
                 if (editable.length() != 0) {
                     new Thread(new Runnable() {
@@ -62,14 +63,16 @@ public class SearchFriend extends AppCompatActivity {
                                 Request request = new Request.Builder().post(requestBody).url("http://106.15.201.54:8080/Freego/searchFriends").build();
                                 Response response = okHttpClient.newCall(request).execute();
                                 String usersMessage = response.body().string().toString();
+                                usersMessage = usersMessage.substring(1, usersMessage.length() - 6);
                                 String[] messageList = usersMessage.split("@@@, ");
                                 for (String oneMessage : messageList) {
                                     User user = new User();
                                     String[] splitMessage = oneMessage.split("##,##");
                                     user.setAccount(splitMessage[0]);
                                     user.setName(splitMessage[1]);
-                                    user.setSex(splitMessage[2]);
-                                    user.setMotto(splitMessage[3]);
+                                    user.setAge(Integer.parseInt(splitMessage[2]));
+                                    user.setSex(splitMessage[3]);
+                                    user.setMotto(splitMessage[4]);
                                     userList.add(user);
                                 }
                                 runOnUiThread(new Runnable() {
@@ -86,6 +89,7 @@ public class SearchFriend extends AppCompatActivity {
                 } else {
                     adapter.cleanBitmap();
                     userList.clear();
+                    userView.removeAllViews();
                     adapter.notifyDataSetChanged();
                 }
             }

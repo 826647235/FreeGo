@@ -1,67 +1,21 @@
 package com.example.smallning.freego;
 
-//import android.Manifest;
-//import android.content.Context;
-//import android.content.pm.PackageManager;
-//import android.graphics.Color;
-//import android.graphics.Point;
-//import android.location.Location;
-//import android.support.annotation.NonNull;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-//import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-//import android.support.v4.content.ContextCompat;
-//import android.support.v7.widget.RecyclerView;
-//import android.text.Editable;
-//import android.text.TextWatcher;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.GeolocationPermissions;
-import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.Toast;
-
-import com.amap.api.maps.model.Text;
-//import android.widget.ArrayAdapter;
-//import android.widget.Button;
-//import android.widget.EditText;
-//import android.widget.ListView;
-//import android.widget.TextView;
-//import android.widget.Toast;
-//
-//import com.amap.api.maps.AMap;
-//import com.amap.api.maps.AMapUtils;
-//import com.amap.api.maps.CameraUpdateFactory;
-//import com.amap.api.maps.MapView;
-//import com.amap.api.maps.UiSettings;
-//import com.amap.api.maps.model.LatLng;
-//import com.amap.api.maps.model.MyLocationStyle;
-//import com.amap.api.maps.model.Poi;
-//
-//import com.amap.api.maps.model.Text;
-//import com.amap.api.services.core.LatLonPoint;
-//import com.amap.api.services.core.PoiItem;
-//
-//import com.amap.api.services.geocoder.GeocodeResult;
-//import com.amap.api.services.geocoder.GeocodeSearch;
-//import com.amap.api.services.geocoder.RegeocodeQuery;
-//import com.amap.api.services.geocoder.RegeocodeResult;
-//import com.amap.api.services.poisearch.PoiResult;
-//import com.amap.api.services.poisearch.PoiSearch;
-//
-//import java.util.ArrayList;
-//import java.util.List;
+import com.tencent.smtt.sdk.WebChromeClient;
+import com.tencent.smtt.sdk.WebSettings;
+import com.tencent.smtt.sdk.WebView;
+import com.tencent.smtt.sdk.WebViewClient;
 
 
 /**
@@ -95,44 +49,26 @@ public class MapFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map, container, false);
         webView = view.findViewById(R.id.webView);
-
         webView.setWebViewClient(new WebViewClient());
         WebSettings webSettings = webView.getSettings();
+        webSettings.setDatabaseEnabled(true);
+        webSettings.setLoadWithOverviewMode(true);
+        webSettings.setUseWideViewPort(true);
+        String dir = getActivity().getApplicationContext().getDir("Database", Context.MODE_PRIVATE).getPath();
         webSettings.setJavaScriptEnabled(true);
         webSettings.setDomStorageEnabled(true);
-        webView.setWebChromeClient(new WebChromeClient() {
-            @Override
-            public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
-            // TODO Auto-generated method stub
-            //重写此方法，配置权限
-                callback.invoke(origin, true, false);
-            super.onGeolocationPermissionsShowPrompt(origin, callback);
-        }
-
-    });
+        webSettings.setGeolocationDatabasePath(dir);
+        webSettings.setAppCacheEnabled(true);
+        webView.setWebChromeClient(new WebChromeClient());
+        webView.setWebViewClient(new WebViewClient());
         int checkPermission = ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION);
         if (checkPermission != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-        } else {
-            webView.loadUrl("https://map.baidu.com/mobile/webapp/index/index/foo=bar/vt=map");
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 2);
+            webView.loadUrl("https://m.amap.com/");
         }
+        webView.loadUrl("https://m.amap.com/");
         return view;
-    }
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case 1:
-
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    webView.loadUrl("http://m.amap.com");
-                } else {
-                    Toast.makeText(getContext(),"请开启定位权限",Toast.LENGTH_SHORT).show();
-                }
-                break;
-            default:
-                break;
-        }
     }
 }
 //        mapView = view.findViewById(R.id.map);
